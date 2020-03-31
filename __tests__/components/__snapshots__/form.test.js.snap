@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the Table component Form 1`] = `
+<div>
+  <div
+    class="form"
+  >
+    <label>
+      M:
+      <input
+        data-testid="input_m"
+        min="0"
+        name="m"
+        type="number"
+        value="0"
+      />
+    </label>
+    <label>
+      N:
+      <input
+        data-testid="input_n"
+        min="0"
+        name="n"
+        type="number"
+        value="0"
+      />
+    </label>
+    <label>
+      X:
+      <input
+        data-testid="input_x"
+        min="0"
+        name="x"
+        type="number"
+        value="0"
+      />
+    </label>
+    <button>
+      Build table
+    </button>
+  </div>
+</div>
+`;

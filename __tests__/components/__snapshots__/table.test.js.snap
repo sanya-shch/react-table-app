@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the Table component table 1`] = `
+<div>
+  <table>
+    <tbody>
+      <tr>
+        <td
+          class="tableCell "
+        >
+          615
+        </td>
+        <td
+          class="tableCell "
+        >
+          676
+        </td>
+        <td
+          class="tableCell "
+        >
+          335
+        </td>
+        <td>
+          1626
+        </td>
+        <td
+          class="delBtn"
+        >
+          Delete
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="tableCell "
+        >
+          802
+        </td>
+        <td
+          class="tableCell "
+        >
+          703
+        </td>
+        <td
+          class="tableCell "
+        >
+          254
+        </td>
+        <td>
+          1759
+        </td>
+        <td
+          class="delBtn"
+        >
+          Delete
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="tableCell "
+        >
+          982
+        </td>
+        <td
+          class="tableCell "
+        >
+          919
+        </td>
+        <td
+          class="tableCell "
+        >
+          748
+        </td>
+        <td>
+          2649
+        </td>
+        <td
+          class="delBtn"
+        >
+          Delete
+        </td>
+      </tr>
+      <tr>
+        <td>
+          791.67
+        </td>
+        <td>
+          602.33
+        </td>
+        <td>
+          502
+        </td>
+        <td
+          class="addBtn"
+          data-testid="add"
+        >
+          Add
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
+
+exports[`the Table component table 2`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "type": "ADD_ROW",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`the Table component table 3`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "type": "ADD_ROW",
+      },
+    ],
+    Array [
+      Object {
+        "payload": "0",
+        "type": "DELETE_ROW",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;

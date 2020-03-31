@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the Row component row component - click on cell 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "payload": "0",
+        "type": "SET_ROW_PERCENTS",
+      },
+    ],
+    Array [
+      Object {
+        "payload": "clean",
+        "type": "SET_ROW_PERCENTS",
+      },
+    ],
+    Array [
+      Object {
+        "payload": "0-2",
+        "type": "SET_CLOSE_VALUES",
+      },
+    ],
+    Array [
+      Object {
+        "payload": undefined,
+        "type": "SET_CLOSE_VALUES",
+      },
+    ],
+    Array [
+      Object {
+        "payload": Object {
+          "cellId": "0-2",
+          "cellIndex": 2,
+        },
+        "type": "ADD_AMOUNT",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`the Row component row component - toMatchSnapshot 1`] = `
+<div>
+  <table>
+    <tbody>
+      <tr>
+        <td
+          class="tableCell "
+        >
+          614
+        </td>
+        <td
+          class="tableCell "
+        >
+          676
+        </td>
+        <td
+          class="tableCell "
+        >
+          335
+        </td>
+        <td>
+          1625
+        </td>
+        <td
+          class="delBtn"
+        >
+          Delete
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;

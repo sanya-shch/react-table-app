@@ -1,57 +1,48 @@
 import React from "react";
+import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
-import { render, fireEvent } from "@testing-library/react";
+import { create, act } from "react-test-renderer";
 import Form from "../../src/components/Form";
-import reducers from "../../src/redux/reducers/tableReducer";
 
-describe("the Table component", () => {
-  it("Form", () => {
-    const store = makeTestStore();
+const mockStore = configureMockStore();
 
-    const { getByText, getByLabelText, getByTestId, container } = render(
-      <Provider store={store}>{<Form />}</Provider>
-    );
+describe("Table component", () => {
+  let store = mockStore({});
+  let component = create(
+    <Provider store={store}>
+      <Form />
+    </Provider>
+  );
 
-    expect(container).toMatchSnapshot();
+  test("Matches the snapshot", () => {
+    expect(store.getState()).toMatchSnapshot();
+    expect(component.toJSON()).toMatchSnapshot();
+  });
 
-    expect(getByLabelText("M:").value).toEqual("0");
+  test("handleChange", () => {
+    const instance = component.root;
+    const input = instance.findByProps({ "data-testid": "input_m" });
 
-    expect(getByLabelText("N:").value).toEqual("0");
+    act(() => input.props.onChange({ target: { value: 5, name: "m" } }));
 
-    expect(getByLabelText("X:").value).toEqual("0");
+    expect(input.props.value).toEqual(5);
+  });
 
-    fireEvent.change(getByTestId("input_m"), { target: { value: "1000" } });
-    expect(
-      getByLabelText("M:", {
-        selector: "input"
-      }).value
-    ).toBe("1000");
+  test("handleSubmit", () => {
+    const instance = component.root;
+    const button = instance.findByType("button");
 
-    fireEvent.change(getByTestId("input_n"), { target: { value: "10" } });
-    expect(
-      getByLabelText("N:", {
-        selector: "input"
-      }).value
-    ).toBe("10");
+    act(() => button.props.onClick());
 
-    fireEvent.change(getByTestId("input_x"), { target: { value: "30" } });
-    expect(
-      getByLabelText("X:", {
-        selector: "input"
-      }).value
-    ).toBe("30");
-
-    fireEvent.click(getByText("Build table"));
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: { m: 1000, n: 10, x: 30 },
-      type: "SET_TABLE"
-    });
+    expect(store.getActions()).toEqual([
+      {
+        payload: {
+          m: 5,
+          n: 0,
+          x: 0
+        },
+        type: "SET_TABLE"
+      }
+    ]);
   });
 });
-
-function makeTestStore() {
-  const store = createStore(reducers, {});
-  store.dispatch = jest.fn();
-  return store;
-}

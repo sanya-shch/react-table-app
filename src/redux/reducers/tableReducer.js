@@ -1,5 +1,8 @@
 // @flow
 
+import * as R from "ramda";
+import { fillRow } from "../../utils";
+
 import {
   SET_TABLE,
   ADD_ROW,
@@ -73,50 +76,34 @@ const tableReducer = (
   let table: Table = [];
   let rows: Rows = {};
   let cells: Cells = {};
-  let columnSum = {};
+  let columnSum: ColumnSum = {};
 
   switch (action.type) {
     case SET_TABLE:
       let rowId: string;
-      let row: string[];
-      let amount: number;
-      let id: string;
 
       for (let i = 0; i < action.payload.m; i++) {
-        row = [];
         rowId = `${i}`;
 
         table.push(rowId);
 
-        for (let j = 0; j < action.payload.n; j++) {
-          amount = Math.round(100 + Math.random() * (999 - 100));
-          id = `${i}-${j}`;
+        const { newCells, newRow: row } = fillRow(action.payload.n, rowId);
 
-          row.push(id);
-          cells[id] = { id, amount };
-        }
+        cells = { ...cells, ...newCells };
 
         rows[rowId] = row;
       }
 
       //
 
-      const columnSumRow = [];
+      const columnSumRow = rows[table[0]].map((cId, index) => {
+        columnSum[`averageColumn${index}`] = {
+          id: `averageColumn${index}`,
+          value: table.reduce((a, b) => cells[rows[b][index]].amount + a, 0)
+        };
 
-      let value: number;
-      let columnSumId;
-
-      for (let i = 0; i < action.payload.n; i++) {
-        value = 0;
-
-        for (let j = 0; j < action.payload.m; j++) {
-          value += cells[rows[table[j]][i]].amount;
-        }
-
-        columnSumId = `averageColumn${i}`;
-        columnSum[columnSumId] = { id: columnSumId, value };
-        columnSumRow.push(columnSumId);
-      }
+        return `averageColumn${index}`;
+      });
 
       return {
         ...state,
@@ -129,20 +116,17 @@ const tableReducer = (
       };
     case ADD_ROW:
       let newRowId = `${parseInt(state.table[state.table.length - 1], 10) + 1}`;
-      let newRow = [];
-      let newCells = {};
 
-      columnSum = { ...state.columnSum };
+      columnSum = R.clone(state.columnSum);
 
-      for (let j = 0, len = state.rows[state.table[0]].length; j < len; j++) {
-        const amount = Math.round(100 + Math.random() * (999 - 100));
-        const id = `${newRowId}-${j}`;
+      const { newCells, newRow } = fillRow(
+        state.rows[state.table[0]].length,
+        newRowId
+      );
 
-        newRow.push(id);
-        newCells[id] = { id, amount };
-
-        columnSum[state.columnSumRow[j]].value += amount;
-      }
+      state.columnSumRow.forEach(
+        (idx, index) => (columnSum[idx].value += newCells[newRow[index]].amount)
+      );
 
       return {
         ...state,
@@ -154,7 +138,7 @@ const tableReducer = (
     case DELETE_ROW:
       rows = { ...state.rows };
       cells = { ...state.cells };
-      columnSum = { ...state.columnSum };
+      columnSum = R.clone(state.columnSum);
 
       for (let i = 0, len = state.rows[state.table[0]].length; i < len; i++) {
         columnSum[state.columnSumRow[i]].value -=
@@ -174,8 +158,8 @@ const tableReducer = (
         columnSum
       };
     case ADD_AMOUNT:
-      cells = { ...state.cells };
-      columnSum = { ...state.columnSum };
+      cells = R.clone(state.cells);
+      columnSum = R.clone(state.columnSum);
 
       cells[action.payload.cellId].amount++;
 

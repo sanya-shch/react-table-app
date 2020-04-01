@@ -1,90 +1,38 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { create } from "react-test-renderer";
 import Cell from "../../src/components/Cell";
-import {
-  getIsCloseValue,
-  getCellPercent,
-  getCellAmount
-} from "../../src/redux/selectors";
-import reducers from "../../src/redux/reducers/tableReducer";
-import { testStore } from "../reducers/reducers.test";
+import { testStore } from "./table.test";
 
-jest.mock("../../src/redux/selectors", () => ({
-  getIsCloseValue: jest.fn(),
-  getCellPercent: jest.fn(),
-  getCellAmount: jest.fn()
-}));
+const mockStore = configureMockStore();
 
-describe("the Cell component", () => {
-  const store = createStore(reducers, { table: testStore });
+describe("Table component", () => {
+  let store;
+  let component;
 
-  it("cell component - toMatchSnapshot 1", () => {
-    getCellAmount.mockReturnValue(335);
-    getIsCloseValue.mockReturnValue(false);
-    getCellPercent.mockReturnValue(undefined);
-
-    const { container } = render(
+  beforeEach(() => {
+    store = mockStore({
+      table: {
+        ...testStore,
+        closeValues: {
+          "0-0": { amount: 0, id: "0-0" },
+          "0-1": { amount: 61, id: "0-1" },
+          "1-1": { amount: 88, id: "1-1" },
+          "2-2": { amount: 133, id: "2-2" }
+        },
+        rowPercents: { "0-0": "37.78%", "0-1": "41.6%", "0-2": "20.62%" }
+      }
+    });
+    component = create(
       <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <tr>
-                <Cell
-                  cellIndex={1}
-                  cellId={"0-2"} /*onclick onmouseover  onmouseout*/
-                />
-              </tr>
-            </tbody>
-          </table>
-        }
+        <Cell cellId={"0-0"} cellIndex={0} />
       </Provider>
     );
-
-    expect(container).toMatchSnapshot();
   });
 
-  it("cell component - toMatchSnapshot 2", () => {
-    getCellAmount.mockReturnValue(335);
-    getIsCloseValue.mockReturnValue(true);
-
-    const { container } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <tr>
-                <Cell cellIndex={1} cellId={"0-2"} />
-              </tr>
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
-
-    expect(container).toMatchSnapshot();
-  });
-
-  it("cell component - toMatchSnapshot 3", () => {
-    getCellAmount.mockReturnValue(335);
-    getIsCloseValue.mockReturnValue(false);
-    getCellPercent.mockReturnValue("10%");
-
-    const { container } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <tr>
-                <Cell cellIndex={1} cellId={"0-2"} />
-              </tr>
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
-
-    expect(container).toMatchSnapshot();
+  test("Matches the snapshot", () => {
+    expect(store.getState()).toMatchSnapshot();
+    expect(component.toJSON()).toMatchSnapshot();
   });
 });

@@ -21,7 +21,7 @@ const Table = () => {
   };
 
   return (
-    <>
+    <div>
       {table.length > 0 && (
         <table>
           <tbody>
@@ -42,9 +42,8 @@ const Table = () => {
           </tbody>
         </table>
       )}
-    </>
+    </div>
   );
 };
 
 export default Table;
-

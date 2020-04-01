@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import {} from "../redux/actions/tableActions";
 import {
   getCellAmount,
   getIsCloseValue,
@@ -15,13 +14,13 @@ import type {
   HandleOnmouseLeaveCell
 } from "./Row";
 
-type Props = {
-  cellId: string,
-  cellIndex: number,
+export type Props = {|
+  +cellId: string,
+  +cellIndex: number,
   onclick: HandleClickAddAmount,
   onmouseover: HandleOnmouseOverCell,
   onmouseout: HandleOnmouseLeaveCell
-};
+|};
 
 const Cell = (props: Props) => {
   const { cellIndex, cellId, onclick, onmouseover, onmouseout } = props;
@@ -30,10 +29,10 @@ const Cell = (props: Props) => {
     getCellAmount(state, props)
   );
   const isClose: boolean = useSelector((state: Store) =>
-    getIsCloseValue(state, cellId)
+    getIsCloseValue(state, props)
   );
   const percent: string = useSelector((state: Store) =>
-    getCellPercent(state, cellId)
+    getCellPercent(state, props)
   );
 
   const style = {

@@ -1,162 +1,100 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
-import Row from "../../src/components/Row";
+import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
-import reducers from "../../src/redux/reducers/tableReducer";
+import { create } from "react-test-renderer";
+import Row from "../../src/components/Row";
+import { testStore } from "./table.test";
 
-export const testStore = {
-  cells: {
-    "0-0": { amount: 614, id: "0-0" },
-    "0-1": { amount: 676, id: "0-1" },
-    "0-2": { amount: 335, id: "0-2" }
-  },
-  closeValues: {},
-  columnSum: {
-    averageColumn0: { id: "averageColumn0", value: 614 },
-    averageColumn1: { id: "averageColumn1", value: 676 },
-    averageColumn2: { id: "averageColumn2", value: 335 }
-  },
-  columnSumRow: ["averageColumn0", "averageColumn1", "averageColumn2"],
-  rowPercents: {},
-  rows: {
-    "0": ["0-0", "0-1", "0-2"]
-  },
-  table: ["0"],
-  x: 0
-};
+const mockStore = configureMockStore();
 
-describe("the Row component", () => {
-  const store = makeTestStore();
+describe("Table component", () => {
+  let store;
+  let component;
 
-  it("row component - toMatchSnapshot", () => {
-    const { container } = render(
+  beforeEach(() => {
+    store = mockStore({ table: testStore });
+    component = create(
       <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
+        <Row rowId={"0"} />
       </Provider>
     );
-
-    expect(container).toMatchSnapshot();
   });
 
-  it("row component - mouseOver sum", () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
-
-    fireEvent.mouseOver(getByText("1625"));
-
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: "0",
-      type: "SET_ROW_PERCENTS"
-    });
+  test("Matches the snapshot", () => {
+    expect(store.getState()).toMatchSnapshot();
+    expect(component.toJSON()).toMatchSnapshot();
   });
 
-  it("row component - mouseLeave sum", () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
+  test("handleClickDelete", () => {
+    const instance = component.root;
+    const button = instance.findByProps({ className: "delBtn" });
 
-    fireEvent.mouseLeave(getByText("1625"));
+    button.props.onClick();
 
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: "clean",
-      type: "SET_ROW_PERCENTS"
-    });
+    expect(store.getActions()).toEqual([{ payload: "0", type: "DELETE_ROW" }]);
   });
 
-  it("row component - mouseOver cell", () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
+  test("handleOnmouseOverSum", () => {
+    const instance = component.root;
+    const cell = instance.findByProps({ className: "sumCell" });
 
-    fireEvent.mouseOver(getByText("335"));
+    cell.props.onMouseOver();
 
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: "0-2",
-      type: "SET_CLOSE_VALUES"
-    });
+    expect(store.getActions()).toEqual([
+      { payload: "0", type: "SET_ROW_PERCENTS" }
+    ]);
   });
 
-  it("row component - mouseLeave cell", () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
+  test("handleOnmouseLeaveSum", () => {
+    const instance = component.root;
+    const cell = instance.findByProps({ className: "sumCell" });
 
-    fireEvent.mouseLeave(getByText("335"));
+    cell.props.onMouseOut();
 
-    expect(store.dispatch).toHaveBeenCalledWith({
-      type: "SET_CLOSE_VALUES"
-    });
+    expect(store.getActions()).toEqual([
+      {
+        payload: "clean",
+        type: "SET_ROW_PERCENTS"
+      }
+    ]);
   });
 
-  it("row component - click on cell", () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        {
-          <table>
-            <tbody>
-              <Row rowId={"0"} />
-            </tbody>
-          </table>
-        }
-      </Provider>
-    );
+  test("handleOnmouseOverCell", () => {
+    const instance = component.root;
+    const cell = instance.findAllByProps({ className: "tableCell " })[0];
 
-    fireEvent.click(getByText("335"));
+    cell.props.onMouseOver();
 
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: {
-        cellId: "0-2",
-        cellIndex: 2
-      },
-      type: "ADD_AMOUNT"
-    });
+    expect(store.getActions()).toEqual([
+      { payload: "0-0", type: "SET_CLOSE_VALUES" }
+    ]);
+  });
 
-    expect(store.dispatch).toMatchSnapshot();
+  test("handleOnmouseLeaveCell", () => {
+    const instance = component.root;
+    const cell = instance.findAllByProps({ className: "tableCell " })[0];
+
+    cell.props.onMouseOut("0-0");
+
+    expect(store.getActions()).toEqual([
+      { payload: undefined, type: "SET_CLOSE_VALUES" }
+    ]);
+  });
+
+  test("handleClickAddAmount", () => {
+    const instance = component.root;
+    const cell = instance.findAllByProps({ className: "tableCell " })[0];
+
+    cell.props.onClick("0-0", 0);
+
+    expect(store.getActions()).toEqual([
+      {
+        payload: {
+          cellId: "0-0",
+          cellIndex: 0
+        },
+        type: "ADD_AMOUNT"
+      }
+    ]);
   });
 });
-
-function makeTestStore() {
-  const store = createStore(reducers, { table: testStore });
-  store.dispatch = jest.fn();
-  return store;
-}

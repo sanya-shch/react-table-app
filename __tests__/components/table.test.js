@@ -1,57 +1,60 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import configureMockStore from "redux-mock-store";
+import { Provider } from "react-redux";
+import { create } from "react-test-renderer";
 import Table from "../../src/components/Table";
 
-import { Provider } from "react-redux";
-import { createStore } from "redux";
-import reducers from "../../src/redux/reducers/tableReducer";
-import { testStore } from "../reducers/reducers.test";
+const mockStore = configureMockStore();
 
-describe("the Table component", () => {
-  it("table", () => {
-    const store = makeTestStore();
+export const testStore = {
+  cells: {
+    "0-0": { amount: 614, id: "0-0" },
+    "0-1": { amount: 676, id: "0-1" },
+    "0-2": { amount: 335, id: "0-2" },
+    "1-0": { amount: 802, id: "1-0" },
+    "1-1": { amount: 703, id: "1-1" },
+    "1-2": { amount: 254, id: "1-2" },
+    "2-0": { amount: 982, id: "2-0" },
+    "2-1": { amount: 919, id: "2-1" },
+    "2-2": { amount: 748, id: "2-2" }
+  },
+  closeValues: {},
+  columnSum: {
+    averageColumn0: { id: "averageColumn0", value: 2398 },
+    averageColumn1: { id: "averageColumn1", value: 2298 },
+    averageColumn2: { id: "averageColumn2", value: 1337 }
+  },
+  columnSumRow: ["averageColumn0", "averageColumn1", "averageColumn2"],
+  rowPercents: {},
+  rows: {
+    "0": ["0-0", "0-1", "0-2"],
+    "1": ["1-0", "1-1", "1-2"],
+    "2": ["2-0", "2-1", "2-2"]
+  },
+  table: ["0", "1", "2"],
+  x: 3
+};
 
-    const { getByText, getAllByText, container } = testRender(<Table />, {
-      store
-    });
+describe("Table component", () => {
+  let store = mockStore(() => ({ table: testStore }));
 
-    expect(container).toMatchSnapshot();
+  let component = create(
+    <Provider store={store}>
+      <Table />
+    </Provider>
+  );
 
-    expect(getAllByText("Delete").length).toEqual(3);
+  test("Matches the snapshot", () => {
+    expect(store.getState()).toMatchSnapshot();
+    expect(component.toJSON()).toMatchSnapshot();
+  });
 
-    expect(getByText("Add").className).toEqual("addBtn");
+  test("handleClickAdd", () => {
+    const instance = component.root;
+    const button = instance.findByProps({ className: "addBtn" });
 
-    fireEvent.click(getByText("Add"));
+    button.props.onClick();
 
-    expect(store.dispatch).toBeCalled();
-
-    expect(store.dispatch).toMatchSnapshot();
-    expect(store.dispatch).toHaveBeenCalledWith({ type: "ADD_ROW" }); //.toBe();
-
-    //
-
-    fireEvent.click(getAllByText("Delete")[0]);
-    expect(store.dispatch).toHaveBeenCalledWith({
-      payload: "0",
-      type: "DELETE_ROW"
-    });
-    expect(store.dispatch).toMatchSnapshot();
-
+    expect(store.getActions()).toEqual([{ type: "ADD_ROW" }]);
   });
 });
-
-const TestProvider = ({ store, children }) => (
-  <Provider store={store}>{children}</Provider>
-);
-
-function testRender(ui, { store, ...otherOpts }) {
-  return render(<TestProvider store={store}>{ui}</TestProvider>, otherOpts);
-}
-
-function makeTestStore() {
-  const store = createStore(reducers, { table: testStore });
-
-  store.dispatch = jest.fn();
-  return store;
-}
-

@@ -13,9 +13,9 @@ import { getRowSum, getRow } from "../redux/selectors";
 import type { Store } from "../redux/reducers/tableReducer";
 import type { Dispatch } from "../redux/reducers/tableReducer";
 
-type Props = {
-  rowId: string
-};
+type Props = {|
+  +rowId: string
+|};
 
 const Row = ({ rowId }: Props) => {
   const row: string[] = useSelector((state: Store) => getRow(state, rowId));
@@ -60,6 +60,7 @@ const Row = ({ rowId }: Props) => {
         />
       ))}
       <td
+        className="sumCell"
         onMouseOver={() => handleOnmouseOverSum(rowId)}
         onMouseOut={handleOnmouseLeaveSum}
       >
@@ -76,6 +77,4 @@ export type HandleClickAddAmount = (string, number) => void;
 export type HandleOnmouseOverCell = string => void;
 export type HandleOnmouseLeaveCell = () => void;
 
-export default React.memo<Props>(
-  Row
-);
+export default React.memo<Props>(Row);

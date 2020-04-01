@@ -2,13 +2,12 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import {} from "../redux/actions/tableActions";
 import { getAverageValueInColumn } from "../redux/selectors";
 import type { Store } from "../redux/reducers/tableReducer";
 
-type Props = {
-  columnSumId: string
-};
+type Props = {|
+  +columnSumId: string
+|};
 
 const CellAverageInColumn = ({ columnSumId }: Props) => {
   const averageValueInColumn: number = useSelector((state: Store) =>

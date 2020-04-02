@@ -1,6 +1,5 @@
 // @flow
 
-import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -13,7 +12,6 @@ import "./index.css";
 let state;
 if (typeof window !== "undefined") {
   state = window.__PRELOADED_STATE__;
-  delete window.__PRELOADED_STATE__;
 }
 
 const store = createStore(

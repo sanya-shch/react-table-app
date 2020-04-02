@@ -1,5 +1,3 @@
-// import "@babel/polyfill";
-import "regenerator-runtime/runtime";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { Provider } from "react-redux";
@@ -10,6 +8,7 @@ import { assetsByChunkName } from "./dist/stats.json";
 
 import http from "http";
 import fs from "fs";
+import url from "url";
 
 const port = 3000;
 
@@ -41,12 +40,13 @@ const renderer = (req, store) => {
 };
 
 function handleError(err, res) {
-  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.writeHead(500, { "Content-Type": "text/plain" });
   res.end(err.message);
 }
 
 http
   .createServer((req, res) => {
+    console.log(req.url);
     if (req.url === "/") {
       const store = createStore();
 
@@ -62,8 +62,12 @@ http
       stream.on("error", err => handleError(err, res));
       res.writeHead(200, { "Content-Type": "text/javascript" });
       stream.pipe(res);
-    } else if (/\?m=\d+&n=\d+&x=\d+/gim.test(req.url)) {
-      const { m, n, x } = require("url").parse(req.url, true).query;
+    } else if (
+      /m=\d+/.test(req.url) &&
+      /n=\d+/.test(req.url) &&
+      /x=\d+/.test(req.url)
+    ) {
+      const { m, n, x } = url.parse(req.url, true).query;
 
       const store = createStore();
 

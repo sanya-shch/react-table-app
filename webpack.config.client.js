@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const merge = require("webpack-merge");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
@@ -31,11 +32,11 @@ module.exports = merge(baseConfig, {
         cache: true,
         parallel: true,
         uglifyOptions: {
-          compress: false,
-          ecma: 6,
+          compress: true,
+          ecma: 5,
           mangle: true
         },
-        sourceMap: false
+        sourceMap: true
       })
     ]
   },

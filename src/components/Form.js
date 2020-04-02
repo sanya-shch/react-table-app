@@ -7,9 +7,7 @@ export function Form() {
   const { m, n, x } = state;
 
   const handleSubmit = () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `http://localhost:3000/?m=${m}&n=${n}&x=${x}`);
-    xhr.send();
+    window.history.pushState();
   };
 
   const handleChange = (e: SyntheticInputEvent<HTMLInputElement>): void => {

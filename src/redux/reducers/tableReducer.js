@@ -1,7 +1,6 @@
 // @flow
 
-import * as R from "ramda";
-import { fillRow } from "../../utils";
+import { fillRow } from "./utils";
 
 import {
   SET_TABLE,
@@ -117,15 +116,19 @@ const tableReducer = (
     case ADD_ROW:
       let newRowId = `${parseInt(state.table[state.table.length - 1], 10) + 1}`;
 
-      columnSum = R.clone(state.columnSum);
-
       const { newCells, newRow } = fillRow(
         state.rows[state.table[0]].length,
         newRowId
       );
 
-      state.columnSumRow.forEach(
-        (idx, index) => (columnSum[idx].value += newCells[newRow[index]].amount)
+      columnSum = Object.fromEntries(
+        state.columnSumRow.map((id, index) => [
+          id,
+          {
+            ...state.columnSum[id],
+            value: state.columnSum[id].value + newCells[newRow[index]].amount
+          }
+        ])
       );
 
       return {
@@ -138,11 +141,19 @@ const tableReducer = (
     case DELETE_ROW:
       rows = { ...state.rows };
       cells = { ...state.cells };
-      columnSum = R.clone(state.columnSum);
+      columnSum = { ...state.columnSum };
 
       for (let i = 0, len = state.rows[state.table[0]].length; i < len; i++) {
-        columnSum[state.columnSumRow[i]].value -=
-          cells[rows[action.payload][i]].amount;
+        columnSum = {
+          ...columnSum,
+          [state.columnSumRow[i]]: {
+            ...state.columnSum[state.columnSumRow[i]],
+            value:
+              state.columnSum[state.columnSumRow[i]].value -
+              cells[rows[action.payload][i]].amount
+          }
+        };
+
         delete cells[state.rows[action.payload][i]];
       }
 
@@ -158,12 +169,21 @@ const tableReducer = (
         columnSum
       };
     case ADD_AMOUNT:
-      cells = R.clone(state.cells);
-      columnSum = R.clone(state.columnSum);
+      cells = Object.assign({}, state.cells, {
+        [action.payload.cellId]: {
+          ...state.cells[action.payload.cellId],
+          amount: state.cells[action.payload.cellId].amount + 1
+        }
+      });
 
-      cells[action.payload.cellId].amount++;
-
-      columnSum[state.columnSumRow[action.payload.cellIndex]].value++;
+      columnSum = Object.assign({}, state.columnSum, {
+        [state.columnSumRow[action.payload.cellIndex]]: {
+          ...state.columnSum[state.columnSumRow[action.payload.cellIndex]],
+          value:
+            state.columnSum[state.columnSumRow[action.payload.cellIndex]]
+              .value + 1
+        }
+      });
 
       return {
         ...state,

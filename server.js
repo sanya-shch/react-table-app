@@ -24,9 +24,9 @@ const renderer = (req, store) => {
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" type="text/css" href="/${
-        assetsByChunkName.main[0]
-      }" />
+      <link rel="stylesheet" type="text/css" href="/${assetsByChunkName.main.find(
+        (item) => /^styles\S*\.css$/.test(item)
+      )}" />
       <title>Table</title>
     </head>
     <body>
@@ -34,7 +34,9 @@ const renderer = (req, store) => {
       <script>
       window.__PRELOADED_STATE__ = ${JSON.stringify(store.getState())}
       </script>
-      <script src="/${assetsByChunkName.main[1]}"></script>
+      <script src="/${assetsByChunkName.main.find(
+        (item) => /^bundle\S*\.js$/.test(item)
+      )}"></script>
     </body>
   </html>`;
 };

@@ -1,22 +1,13 @@
 // @flow
 
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setTable } from "../redux/actions/tableActions";
-import type { Dispatch } from "../redux/reducers/tableReducer";
 
 export function Form() {
   const [state, setstate] = useState({ m: 0, n: 0, x: 0 });
   const { m, n, x } = state;
 
-  const dispatch: Dispatch = useDispatch<Dispatch>();
-
-  const handleSubmit = (e: SyntheticEvent<HTMLButtonElement>): void => {
-
-
-    setstate({ m: 0, n: 0, x: 0 });
-
-    dispatch(setTable(m, n, x));
+  const handleSubmit = () => {
+    window.history.pushState();
   };
 
   const handleChange = (e: SyntheticInputEvent<HTMLInputElement>): void => {
@@ -24,7 +15,7 @@ export function Form() {
   };
 
   return (
-    <div className="form">
+    <form onSubmit={handleSubmit} className="form">
       <label>
         M:
         <input
@@ -61,8 +52,8 @@ export function Form() {
         />
       </label>
 
-      <button onClick={handleSubmit}>Build table</button>
-    </div>
+      <button>Build table</button>
+    </form>
   );
 }
 

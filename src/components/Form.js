@@ -7,7 +7,7 @@ export function Form() {
   const { m, n, x } = state;
 
   const handleSubmit = () => {
-    window.history.pushState(state, "Table", "http://localhost:3000/");
+    window.history.pushState();
   };
 
   const handleChange = (e: SyntheticInputEvent<HTMLInputElement>): void => {
